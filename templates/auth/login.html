@@ -15,6 +15,26 @@
             </div>
             
             <div class="auth-body">
+                <!-- Live Demo Access Credentials Box -->
+                <div class="mb-4 p-3 bg-light rounded-3 border">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="small fw-bold text-dark text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.04em;">
+                            <i class="bi bi-key-fill text-warning me-1"></i> Demo Access Credentials
+                        </span>
+                        <span class="badge bg-primary bg-opacity-10 text-primary">1-Click Auto Fill</span>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-outline-danger btn-sm flex-fill fw-semibold py-2" onclick="fillCredentials('admin@college.com', 'Admin@123')">
+                            <i class="bi bi-shield-lock-fill me-1"></i> Admin Demo
+                            <div class="text-muted" style="font-size: 0.7rem; font-weight: normal;">admin@college.com / Admin@123</div>
+                        </button>
+                        <button type="button" class="btn btn-outline-primary btn-sm flex-fill fw-semibold py-2" onclick="fillCredentials('rahul.sharma@college.com', 'Student@123')">
+                            <i class="bi bi-mortarboard-fill me-1"></i> Student Demo
+                            <div class="text-muted" style="font-size: 0.7rem; font-weight: normal;">rahul.sharma / Student@123</div>
+                        </button>
+                    </div>
+                </div>
+
                 <form action="{{ url_for('login') }}{% if request.args.get('next') %}?next={{ request.args.get('next') }}{% endif %}" method="POST" class="needs-validation" novalidate>
                     <div class="mb-3">
                         <label class="form-label" for="email">Email Address</label>
