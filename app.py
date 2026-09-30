@@ -17,8 +17,12 @@ from database import (
     query_db, execute_db, generate_complaint_code
 )
 
-# Initialize Flask Application
-app = Flask(__name__)
+# Initialize Flask Application with explicit static configuration
+app = Flask(
+    __name__,
+    static_folder=os.path.join(Config.BASE_DIR, 'static'),
+    static_url_path='/static'
+)
 app.config.from_object(Config)
 
 # Register teardown function to close SQLite connection per request
@@ -1091,6 +1095,13 @@ def admin_departments():
 # ==========================================================
 # FILE DOWNLOAD & ERROR HANDLING ROUTES
 # ==========================================================
+
+@app.route('/static/<path:filename>')
+def serve_static_asset(filename):
+    """Explicitly serves static CSS/JS/images on serverless cloud platforms."""
+    static_dir = os.path.join(Config.BASE_DIR, 'static')
+    return send_from_directory(static_dir, filename)
+
 
 @app.route('/uploads/<path:filename>')
 def uploaded_file(filename):
