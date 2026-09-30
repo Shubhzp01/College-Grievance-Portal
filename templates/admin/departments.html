@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Departments - Administrator Panel{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}" class="text-decoration-none">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Manage Departments</li>
+        </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h3 class="fw-bold mb-0 text-dark">Grievance Departments & Domains</h3>
+            <p class="text-muted small mb-0">Configure operational departments available to students during complaint lodgement.</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Left: Add Department Form -->
+        <div class="col-lg-4">
+            <div class="custom-card p-4">
+                <h5 class="fw-bold text-dark mb-3">
+                    <i class="bi bi-plus-circle text-primary me-2"></i>Add New Domain
+                </h5>
+                <form action="{{ url_for('admin_departments') }}" method="POST" class="needs-validation" novalidate>
+                    <input type="hidden" name="action" value="add">
+                    <div class="mb-3">
+                        <label class="form-label" for="name">Department / Category Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="name" name="name" placeholder="e.g. Sports & Gymnasium" required minlength="3">
+                        <div class="invalid-feedback">Please enter a department name.</div>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 rounded-pill fw-bold">
+                        <i class="bi bi-check2 me-1"></i> Add Category
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Right: Existing Departments Table -->
+        <div class="col-lg-8">
+            <div class="custom-card overflow-hidden">
+                <div class="card-header-clean bg-light d-flex justify-content-between align-items-center">
+                    <h6 class="fw-bold mb-0 text-dark"><i class="bi bi-building me-2 text-primary"></i>Active Categories ({{ departments|length }})</h6>
+                </div>
+                <div class="p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width: 80px;">#</th>
+                                    <th>Department Name</th>
+                                    <th>Complaints Linked</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for d in departments %}
+                                <tr>
+                                    <td><span class="text-muted small">{{ loop.index }}</span></td>
+                                    <td>
+                                        <div class="fw-bold text-dark">{{ d.name }}</div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-soft-primary text-primary">{{ d.complaints_count }} Complaints</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <form action="{{ url_for('admin_departments') }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to remove the {{ d.name }} department?');">
+                                            <input type="hidden" name="action" value="delete">
+                                            <input type="hidden" name="department_id" value="{{ d.id }}">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3">
+                                                <i class="bi bi-trash"></i> Delete
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

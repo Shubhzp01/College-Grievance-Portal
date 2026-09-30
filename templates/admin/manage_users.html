@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Users - Administrator Panel{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}" class="text-decoration-none">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Manage Users</li>
+        </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h3 class="fw-bold mb-0 text-dark">Portal User Accounts</h3>
+            <p class="text-muted small mb-0">View registered students and administrators, audit activity, and manage account access status.</p>
+        </div>
+    </div>
+
+    <!-- Filter & Search Toolbar -->
+    <div class="custom-card p-3 mb-4 bg-light">
+        <form action="{{ url_for('admin_users') }}" method="GET" class="row g-2 align-items-center">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text bg-white text-muted"><i class="bi bi-search"></i></span>
+                    <input type="text" name="search" value="{{ search }}" class="form-control" placeholder="Search by name, email, roll no, department...">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <select name="role" class="form-select">
+                    <option value="">All Roles</option>
+                    <option value="student" {% if role_filter == 'student' %}selected{% endif %}>Students Only</option>
+                    <option value="admin" {% if role_filter == 'admin' %}selected{% endif %}>Administrators Only</option>
+                </select>
+            </div>
+            <div class="col-md-2 d-flex gap-2">
+                <button type="submit" class="btn btn-primary flex-fill">
+                    <i class="bi bi-funnel me-1"></i> Filter
+                </button>
+                {% if search or role_filter %}
+                    <a href="{{ url_for('admin_users') }}" class="btn btn-outline-secondary" data-bs-toggle="tooltip" title="Reset">
+                        <i class="bi bi-x-lg"></i>
+                    </a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+
+    <!-- Users Table -->
+    <div class="custom-card overflow-hidden">
+        {% if users %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>User</th>
+                        <th>Role</th>
+                        <th>Roll Number</th>
+                        <th>Department</th>
+                        <th>Complaints Filed</th>
+                        <th>Account Status</th>
+                        <th>Registered On</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in users %}
+                    <tr>
+                        <td>
+                            <div class="fw-bold text-dark">{{ u.name }}</div>
+                            <small class="text-muted">{{ u.email }}</small>
+                        </td>
+                        <td>
+                            {% if u.role == 'admin' %}
+                                <span class="badge bg-danger text-white">Administrator</span>
+                            {% else %}
+                                <span class="badge bg-primary text-white">Student</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="font-monospace fw-semibold">{{ u.roll_no or 'N/A' }}</span>
+                        </td>
+                        <td>
+                            <small class="fw-semibold text-secondary">{{ u.department or 'General' }}</small>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-dark border">{{ u.complaints_count }}</span>
+                        </td>
+                        <td>
+                            {% if u.is_active == 1 %}
+                                <span class="badge bg-success text-white">
+                                    <i class="bi bi-check-circle me-1"></i> Active
+                                </span>
+                            {% else %}
+                                <span class="badge bg-danger text-white">
+                                    <i class="bi bi-slash-circle me-1"></i> Blocked
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <small class="text-muted">{{ u.created_at|format_datetime }}</small>
+                        </td>
+                        <td class="text-end">
+                            {% if u.email != 'admin@college.com' %}
+                                <form action="{{ url_for('admin_toggle_user_status', id=u.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to toggle access status for {{ u.name }}?');">
+                                    {% if u.is_active == 1 %}
+                                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3">
+                                            <i class="bi bi-lock me-1"></i> Block
+                                        </button>
+                                    {% else %}
+                                        <button type="submit" class="btn btn-sm btn-outline-success rounded-pill px-3">
+                                            <i class="bi bi-unlock me-1"></i> Unblock
+                                        </button>
+                                    {% endif %}
+                                </form>
+                            {% else %}
+                                <span class="badge bg-light text-muted border">Root Admin</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="p-5 text-center">
+            <div class="display-6 text-muted mb-2"><i class="bi bi-people"></i></div>
+            <h5 class="fw-bold">No users found</h5>
+            <p class="text-muted small">No account matches your search query.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

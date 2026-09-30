@@ -1,0 +1,259 @@
+{% extends 'base.html' %}
+
+{% block title %}Review Grievance {{ complaint.complaint_code }} - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('admin_dashboard') }}" class="text-decoration-none">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('admin_complaints') }}" class="text-decoration-none">Manage Complaints</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ complaint.complaint_code }}</li>
+        </ol>
+    </nav>
+
+    <div class="row g-4">
+        <!-- Left Column: Complaint Details & Complainant Info -->
+        <div class="col-lg-7">
+            <!-- Complaint Summary Card -->
+            <div class="custom-card mb-4 overflow-hidden">
+                <div class="card-header-clean bg-light d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="badge {{ complaint.status|status_badge }} px-3 py-2 fs-6">
+                            {{ complaint.status }}
+                        </span>
+                        <span class="badge {{ complaint.priority|priority_badge }} ms-1">
+                            {{ complaint.priority }} Priority
+                        </span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <button class="btn btn-sm btn-outline-secondary" onclick="copyToClipboard('{{ complaint.complaint_code }}')" title="Copy Code">
+                            <i class="bi bi-clipboard me-1"></i> <span class="font-monospace fw-bold">{{ complaint.complaint_code }}</span>
+                        </button>
+                        <!-- Delete Button (triggers modal) -->
+                        <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" title="Delete Complaint">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="p-4">
+                    <h4 class="fw-bold text-dark mb-3">{{ complaint.title }}</h4>
+
+                    <div class="mb-3">
+                        <label class="text-muted small text-uppercase fw-bold d-block">Description</label>
+                        <p class="text-dark mb-0 bg-light p-3 rounded-3" style="white-space: pre-line; line-height: 1.6;">{{ complaint.description }}</p>
+                    </div>
+
+                    <div class="row g-3 pt-3 border-top">
+                        <div class="col-md-6">
+                            <span class="text-muted small d-block">Category / Domain</span>
+                            <span class="fw-semibold text-dark">{{ complaint.category }}</span>
+                        </div>
+                        <div class="col-md-6">
+                            <span class="text-muted small d-block">Assigned In-Charge</span>
+                            <span class="fw-semibold text-primary">{{ complaint.assigned_to or 'Unassigned / Grievance Cell' }}</span>
+                        </div>
+                        <div class="col-md-6">
+                            <span class="text-muted small d-block">Date Lodged</span>
+                            <span class="small fw-semibold text-dark">{{ complaint.created_at|format_datetime }}</span>
+                        </div>
+                        <div class="col-md-6">
+                            <span class="text-muted small d-block">Last Updated</span>
+                            <span class="small fw-semibold text-dark">{{ complaint.updated_at|format_datetime }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Attachment Section -->
+                    {% if complaint.attachment %}
+                    <div class="mt-3 pt-3 border-top">
+                        <span class="text-muted small d-block mb-1">Attached Document / Evidence</span>
+                        <div class="d-flex align-items-center gap-2">
+                            <a href="{{ url_for('uploaded_file', filename=complaint.attachment) }}" target="_blank" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-file-earmark-arrow-down me-1"></i> View / Download Attachment
+                            </a>
+                            <small class="text-muted font-monospace">({{ complaint.attachment }})</small>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Complainant Profile Card -->
+            <div class="custom-card p-4 mb-4">
+                <h6 class="fw-bold text-dark mb-3">
+                    <i class="bi bi-person-badge-fill text-primary me-2"></i>Complainant Student Profile
+                </h6>
+                <div class="row g-3 align-items-center">
+                    <div class="col-md-6">
+                        <span class="text-muted small d-block">Student Name</span>
+                        <span class="fw-bold text-dark">
+                            {{ complaint.student_name }}
+                            {% if complaint.is_anonymous %}
+                                <span class="badge bg-secondary text-white ms-1" style="font-size: 0.7rem;">
+                                    <i class="bi bi-incognito me-1"></i> Anonymous
+                                </span>
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="col-md-6">
+                        <span class="text-muted small d-block">Roll Number</span>
+                        <span class="fw-semibold font-monospace">{{ complaint.student_roll }}</span>
+                    </div>
+                    <div class="col-md-6">
+                        <span class="text-muted small d-block">Email Address</span>
+                        <span class="small text-secondary">{{ complaint.student_email }}</span>
+                    </div>
+                    <div class="col-md-6">
+                        <span class="text-muted small d-block">Academic Department</span>
+                        <span class="small fw-semibold text-dark">{{ complaint.student_dept }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Student Feedback Card (if any) -->
+            {% if feedback %}
+            <div class="custom-card p-4 border-success">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <h6 class="fw-bold mb-0 text-success">
+                        <i class="bi bi-check-circle-fill me-1"></i> Student Resolution Satisfaction
+                    </h6>
+                    <span class="stars-display">
+                        {% for i in range(1, 6) %}
+                            <i class="bi bi-star{{ '-fill text-warning' if i <= feedback.rating else ' text-muted' }}"></i>
+                        {% endfor %}
+                    </span>
+                </div>
+                {% if feedback.comment %}
+                    <p class="text-dark small mb-0 bg-light p-2 rounded-2 fst-italic">"{{ feedback.comment }}"</p>
+                {% endif %}
+                <small class="text-muted d-block mt-2">Recorded on {{ feedback.created_at|format_datetime }}</small>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Right Column: Admin Action Form & Resolution History Stepper -->
+        <div class="col-lg-5">
+            <!-- Action Form Card -->
+            <div class="custom-card mb-4 border-primary">
+                <div class="card-header-clean bg-primary text-white">
+                    <h5 class="fw-bold mb-0">
+                        <i class="bi bi-sliders me-2"></i>Update Grievance Status
+                    </h5>
+                </div>
+                <div class="p-4">
+                    <form action="{{ url_for('admin_update_complaint', id=complaint.id) }}" method="POST" class="needs-validation" novalidate>
+                        <!-- Status Transition -->
+                        <div class="mb-3">
+                            <label class="form-label" for="status">Change Status <span class="text-danger">*</span></label>
+                            <select class="form-select fw-bold" id="status" name="status" required>
+                                <option value="Pending" {% if complaint.status == 'Pending' %}selected{% endif %}>Pending (Initial Stage)</option>
+                                <option value="Under Review" {% if complaint.status == 'Under Review' %}selected{% endif %}>Under Review (Assigned to Committee)</option>
+                                <option value="In Progress" {% if complaint.status == 'In Progress' %}selected{% endif %}>In Progress (Action Underway)</option>
+                                <option value="Resolved" {% if complaint.status == 'Resolved' %}selected{% endif %}>Resolved (Fix Verified & Completed)</option>
+                                <option value="Rejected" {% if complaint.status == 'Rejected' %}selected{% endif %}>Rejected (Invalid / Non-compliant)</option>
+                            </select>
+                            <div class="invalid-feedback">Please select a valid status.</div>
+                        </div>
+
+                        <!-- Assign Staff / Department -->
+                        <div class="mb-3">
+                            <label class="form-label" for="assigned_to">Assign / Reassign Staff or Section</label>
+                            <input type="text" class="form-control" id="assigned_to" name="assigned_to" value="{{ complaint.assigned_to or '' }}" placeholder="e.g. Mr. Anil Kumar (IT Cell) or Estate Office">
+                            <div class="form-text">Specify designated technician, supervisor or department in-charge.</div>
+                        </div>
+
+                        <!-- Remarks / Action Log -->
+                        <div class="mb-3">
+                            <label class="form-label" for="remark">Action Remarks / Justification <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="remark" name="remark" rows="3" placeholder="Enter notes explaining the update or action taken..." required minlength="5"></textarea>
+                            <div class="form-text">Visible to the student on their tracking timeline.</div>
+                            <div class="invalid-feedback">Please provide remarks explaining this status change.</div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 rounded-pill py-2 fw-bold">
+                            <i class="bi bi-check2-circle me-1"></i> Apply Status & Log Remark
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Stepper Timeline Card -->
+            <div class="custom-card">
+                <div class="card-header-clean bg-light d-flex justify-content-between align-items-center">
+                    <h6 class="fw-bold mb-0 text-dark">
+                        <i class="bi bi-clock-history text-primary me-2"></i>Action Audit Trail
+                    </h6>
+                    <span class="badge bg-light text-dark border">{{ timeline|length }} Entry{{ 's' if timeline|length != 1 else '' }}</span>
+                </div>
+                <div class="p-3">
+                    <div class="timeline-stepper" style="padding-left: 1.5rem;">
+                        {% for item in timeline %}
+                            {% set is_last = loop.last %}
+                            {% set step_class = '' %}
+                            {% if item.status == 'Resolved' %}
+                                {% set step_class = 'resolved' %}
+                            {% elif item.status == 'Rejected' %}
+                                {% set step_class = 'rejected' %}
+                            {% elif is_last %}
+                                {% set step_class = 'active' %}
+                            {% endif %}
+
+                            <div class="timeline-step {{ step_class }}">
+                                <div class="timeline-icon" style="left: -1.8rem; width: 30px; height: 30px; font-size: 0.8rem;">
+                                    {% if item.status == 'Resolved' %}
+                                        <i class="bi bi-check-lg"></i>
+                                    {% elif item.status == 'Rejected' %}
+                                        <i class="bi bi-x-lg"></i>
+                                    {% elif item.status == 'In Progress' %}
+                                        <i class="bi bi-gear-fill"></i>
+                                    {% elif item.status == 'Under Review' %}
+                                        <i class="bi bi-search"></i>
+                                    {% else %}
+                                        <i class="bi bi-flag-fill"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="timeline-content p-2 ps-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <span class="badge {{ item.status|status_badge }}" style="font-size: 0.72rem;">{{ item.status }}</span>
+                                        <small class="text-muted" style="font-size: 0.72rem;">{{ item.updated_at|format_datetime }}</small>
+                                    </div>
+                                    <div class="timeline-remark small text-dark mb-1">{{ item.remark }}</div>
+                                    <small class="text-muted d-block" style="font-size: 0.72rem;">
+                                        <i class="bi bi-person-fill"></i> {{ item.updated_by }}
+                                    </small>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title fw-bold" id="deleteModalLabel"><i class="bi bi-exclamation-triangle-fill me-2"></i>Confirm Delete Complaint</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-1">Are you sure you want to permanently delete complaint <strong>{{ complaint.complaint_code }}</strong>?</p>
+                <small class="text-danger">This action cannot be undone. All timeline history and associated feedback will be wiped.</small>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
+                <form action="{{ url_for('admin_delete_complaint', id=complaint.id) }}" method="POST">
+                    <button type="submit" class="btn btn-danger rounded-pill px-4">
+                        <i class="bi bi-trash me-1"></i> Yes, Delete Permanently
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ complaint.complaint_code }} - Grievance Details{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('student_dashboard') }}" class="text-decoration-none">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('student_complaints') }}" class="text-decoration-none">My Complaints</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ complaint.complaint_code }}</li>
+        </ol>
+    </nav>
+
+    <div class="row g-4">
+        <!-- Left: Complaint Meta & Description -->
+        <div class="col-lg-5">
+            <div class="custom-card mb-4 overflow-hidden">
+                <div class="card-header-clean bg-light d-flex justify-content-between align-items-center">
+                    <span class="badge {{ complaint.status|status_badge }} px-3 py-2 fs-6">
+                        {{ complaint.status }}
+                    </span>
+                    <button class="btn btn-sm btn-outline-secondary" onclick="copyToClipboard('{{ complaint.complaint_code }}')" data-bs-toggle="tooltip" title="Copy ID">
+                        <i class="bi bi-clipboard me-1"></i> <span class="font-monospace fw-bold">{{ complaint.complaint_code }}</span>
+                    </button>
+                </div>
+                <div class="p-4">
+                    <h5 class="fw-bold text-dark mb-3">{{ complaint.title }}</h5>
+
+                    <div class="mb-3">
+                        <label class="text-muted small text-uppercase fw-bold d-block">Description</label>
+                        <p class="text-secondary mb-0 bg-light p-3 rounded-3" style="white-space: pre-line;">{{ complaint.description }}</p>
+                    </div>
+
+                    <div class="row g-3 pt-2 border-top">
+                        <div class="col-6">
+                            <span class="text-muted small d-block">Category</span>
+                            <span class="fw-semibold text-dark">{{ complaint.category }}</span>
+                        </div>
+                        <div class="col-6">
+                            <span class="text-muted small d-block">Priority</span>
+                            <span class="badge {{ complaint.priority|priority_badge }}">{{ complaint.priority }}</span>
+                        </div>
+                        <div class="col-6">
+                            <span class="text-muted small d-block">Lodge Date</span>
+                            <span class="small fw-semibold text-dark">{{ complaint.created_at|format_datetime }}</span>
+                        </div>
+                        <div class="col-6">
+                            <span class="text-muted small d-block">Assigned Section</span>
+                            <span class="small fw-semibold text-primary">{{ complaint.assigned_to or 'Grievance Cell' }}</span>
+                        </div>
+                        <div class="col-12">
+                            <span class="text-muted small d-block">Submission Type</span>
+                            {% if complaint.is_anonymous %}
+                                <span class="badge bg-secondary text-white">
+                                    <i class="bi bi-incognito me-1"></i> Anonymous
+                                </span>
+                            {% else %}
+                                <span class="badge bg-info text-dark">
+                                    <i class="bi bi-person-check me-1"></i> Verified Student ({{ complaint.student_roll }})
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        {% if complaint.attachment %}
+                        <div class="col-12 pt-2 border-top">
+                            <span class="text-muted small d-block mb-1">Attached Document / Evidence</span>
+                            <a href="{{ url_for('uploaded_file', filename=complaint.attachment) }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-paperclip me-1"></i> View Attachment
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resolution Feedback Card -->
+            {% if complaint.status == 'Resolved' %}
+                {% if feedback %}
+                <div class="custom-card p-4 border-success">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h6 class="fw-bold mb-0 text-success">
+                            <i class="bi bi-check-circle-fill me-1"></i> Your Submitted Feedback
+                        </h6>
+                        <span class="stars-display">
+                            {% for i in range(1, 6) %}
+                                <i class="bi bi-star{{ '-fill text-warning' if i <= feedback.rating else ' text-muted' }}"></i>
+                            {% endfor %}
+                        </span>
+                    </div>
+                    {% if feedback.comment %}
+                        <p class="text-muted small mb-0 bg-light p-2 rounded-2 fst-italic">"{{ feedback.comment }}"</p>
+                    {% endif %}
+                    <small class="text-muted d-block mt-2">Recorded on {{ feedback.created_at|format_datetime }}</small>
+                </div>
+                {% else %}
+                <div class="custom-card p-4 border-primary">
+                    <h5 class="fw-bold text-primary mb-2">
+                        <i class="bi bi-star-half me-1"></i> Rate Resolution Quality
+                    </h5>
+                    <p class="text-muted small mb-3">
+                        This grievance is marked Resolved. How satisfied are you with the timeliness and quality of resolution?
+                    </p>
+
+                    <form action="{{ url_for('submit_feedback', id=complaint.id) }}" method="POST">
+                        <div class="mb-3 text-center">
+                            <label class="form-label d-block text-muted small fw-bold text-uppercase mb-1">Select Star Rating</label>
+                            <div class="star-rating justify-content-center">
+                                <input type="radio" id="star5" name="rating" value="5" required /><label for="star5" title="5 stars - Outstanding"><i class="bi bi-star-fill"></i></label>
+                                <input type="radio" id="star4" name="rating" value="4" /><label for="star4" title="4 stars - Good"><i class="bi bi-star-fill"></i></label>
+                                <input type="radio" id="star3" name="rating" value="3" /><label for="star3" title="3 stars - Average"><i class="bi bi-star-fill"></i></label>
+                                <input type="radio" id="star2" name="rating" value="2" /><label for="star2" title="2 stars - Poor"><i class="bi bi-star-fill"></i></label>
+                                <input type="radio" id="star1" name="rating" value="1" /><label for="star1" title="1 star - Very Poor"><i class="bi bi-star-fill"></i></label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small" for="comment">Feedback Remarks (Optional)</label>
+                            <textarea name="comment" id="comment" rows="2" class="form-control" placeholder="Share your experience with the resolution process..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-sm w-100 rounded-pill py-2 fw-bold">
+                            <i class="bi bi-send-check me-1"></i> Submit Feedback
+                        </button>
+                    </form>
+                </div>
+                {% endif %}
+            {% endif %}
+        </div>
+
+        <!-- Right: Stepper Resolution Timeline -->
+        <div class="col-lg-7">
+            <div class="custom-card h-100">
+                <div class="card-header-clean bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0 text-dark">
+                        <i class="bi bi-clock-history text-primary me-2"></i>Action & Resolution History
+                    </h5>
+                    <span class="badge bg-light text-dark border">
+                        {{ timeline|length }} Event{{ 's' if timeline|length != 1 else '' }}
+                    </span>
+                </div>
+
+                <div class="p-4">
+                    <div class="timeline-stepper">
+                        {% for item in timeline %}
+                            {% set is_last = loop.last %}
+                            {% set step_class = '' %}
+                            {% if item.status == 'Resolved' %}
+                                {% set step_class = 'resolved' %}
+                            {% elif item.status == 'Rejected' %}
+                                {% set step_class = 'rejected' %}
+                            {% elif is_last %}
+                                {% set step_class = 'active' %}
+                            {% endif %}
+
+                            <div class="timeline-step {{ step_class }}">
+                                <div class="timeline-icon">
+                                    {% if item.status == 'Resolved' %}
+                                        <i class="bi bi-check-lg"></i>
+                                    {% elif item.status == 'Rejected' %}
+                                        <i class="bi bi-x-lg"></i>
+                                    {% elif item.status == 'In Progress' %}
+                                        <i class="bi bi-gear-fill"></i>
+                                    {% elif item.status == 'Under Review' %}
+                                        <i class="bi bi-search"></i>
+                                    {% else %}
+                                        <i class="bi bi-flag-fill"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="timeline-content">
+                                    <div class="timeline-header">
+                                        <span class="badge {{ item.status|status_badge }} px-2 py-1">
+                                            {{ item.status }}
+                                        </span>
+                                        <span class="timeline-time">
+                                            <i class="bi bi-calendar3 me-1"></i>{{ item.updated_at|format_datetime }}
+                                        </span>
+                                    </div>
+                                    <div class="timeline-remark">
+                                        {{ item.remark }}
+                                    </div>
+                                    <div class="timeline-author">
+                                        <i class="bi bi-person-fill me-1"></i>Logged by: <strong>{{ item.updated_by }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

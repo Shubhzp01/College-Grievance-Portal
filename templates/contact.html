@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+
+{% block title %}Contact & Helpdesk - Grievance Cell{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('index') }}" class="text-decoration-none">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Contact & Helpdesk</li>
+        </ol>
+    </nav>
+
+    <div class="row g-4">
+        <!-- Left: Contact Details -->
+        <div class="col-lg-5">
+            <div class="custom-card p-4 h-100">
+                <h4 class="fw-bold mb-3"><i class="bi bi-headset text-primary me-2"></i>Grievance Cell Helpdesk</h4>
+                <p class="text-muted small mb-4">
+                    For emergency or confidential queries, students can directly reach out via phone, email, or visit during office hours.
+                </p>
+
+                <div class="d-flex align-items-start gap-3 mb-3">
+                    <div class="p-2 rounded-3 bg-soft-primary text-primary">
+                        <i class="bi bi-geo-alt-fill fs-5"></i>
+                    </div>
+                    <div>
+                        <div class="fw-bold text-dark">Office Location</div>
+                        <small class="text-muted">Room 104, Administrative Block A, Main Campus</small>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-start gap-3 mb-3">
+                    <div class="p-2 rounded-3 bg-soft-success text-success">
+                        <i class="bi bi-envelope-fill fs-5"></i>
+                    </div>
+                    <div>
+                        <div class="fw-bold text-dark">Official Email</div>
+                        <small class="text-muted">grievance-cell@college.edu | admin@college.com</small>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-start gap-3 mb-3">
+                    <div class="p-2 rounded-3 bg-soft-warning text-warning">
+                        <i class="bi bi-telephone-fill fs-5"></i>
+                    </div>
+                    <div>
+                        <div class="fw-bold text-dark">Helpline Numbers</div>
+                        <small class="text-muted">+91 011-2766-7000 (Extn: 104 / 108)</small>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-start gap-3 mb-4">
+                    <div class="p-2 rounded-3 bg-soft-info text-info">
+                        <i class="bi bi-clock-fill fs-5"></i>
+                    </div>
+                    <div>
+                        <div class="fw-bold text-dark">Office Hours</div>
+                        <small class="text-muted">Monday - Saturday: 09:00 AM to 05:00 PM</small>
+                    </div>
+                </div>
+
+                <div class="alert alert-warning border-0 small mb-0">
+                    <i class="bi bi-shield-exclamation me-1"></i>
+                    <strong>Anti-Ragging 24x7 Emergency Toll-Free:</strong> 1800-180-5522
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Inquiry Form & FAQ Accordion -->
+        <div class="col-lg-7">
+            <div class="custom-card p-4 mb-4">
+                <h5 class="fw-bold mb-3"><i class="bi bi-envelope-paper text-primary me-2"></i>Send an Inquiry or General Message</h5>
+                <form action="{{ url_for('contact') }}" method="POST" class="needs-validation" novalidate>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Full Name <span class="text-danger">*</span></label>
+                            <input type="text" name="name" class="form-control" placeholder="Your Name" required>
+                            <div class="invalid-feedback">Name is required.</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Email Address <span class="text-danger">*</span></label>
+                            <input type="email" name="email" class="form-control" placeholder="name@college.com" required>
+                            <div class="invalid-feedback">Valid email is required.</div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Subject</label>
+                            <input type="text" name="subject" class="form-control" placeholder="Topic of inquiry">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Message <span class="text-danger">*</span></label>
+                            <textarea name="message" rows="4" class="form-control" placeholder="Write your message here..." required></textarea>
+                            <div class="invalid-feedback">Please enter your message.</div>
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary px-4 rounded-pill">
+                                <i class="bi bi-send me-1"></i> Send Inquiry
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- FAQ Accordion -->
+            <div class="custom-card p-4">
+                <h5 class="fw-bold mb-3"><i class="bi bi-question-circle text-primary me-2"></i>Frequently Asked Questions</h5>
+                <div class="accordion accordion-flush" id="faqAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="faq1">
+                            <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1">
+                                Can I submit complaints anonymously?
+                            </button>
+                        </h2>
+                        <div id="collapse1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body text-muted small">
+                                Yes, simply check the "Submit Anonymously" option during complaint registration. Your name and roll number will not be disclosed in public lists.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="faq2">
+                            <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2">
+                                How can I track my complaint progress?
+                            </button>
+                        </h2>
+                        <div id="collapse2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body text-muted small">
+                                You can enter your unique Complaint ID (e.g. CMP-2026-0001) in the Track page or check your student dashboard under "My Complaints" to view the complete step-by-step resolution timeline.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="faq3">
+                            <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3">
+                                What if my complaint is not resolved within the SLA?
+                            </button>
+                        </h2>
+                        <div id="collapse3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body text-muted small">
+                                Unresolved complaints pending beyond SLA timeframes are automatically highlighted as Urgent on the Admin dashboard and reviewed by the Dean directly.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

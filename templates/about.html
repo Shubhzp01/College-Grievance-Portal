@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+
+{% block title %}About Grievance Redressal Policy - Grievance Cell{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('index') }}" class="text-decoration-none">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">About Grievance Cell</li>
+        </ol>
+    </nav>
+
+    <!-- Header Banner -->
+    <div class="custom-card p-4 p-md-5 mb-4 text-white" style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 60%, #312e81 100%);">
+        <div class="max-w-xl">
+            <span class="badge bg-primary px-3 py-2 rounded-pill mb-2">Statutory Mandate</span>
+            <h2 class="fw-bold mb-2">Students' Grievance Redressal Mechanism</h2>
+            <p class="text-light text-opacity-75 lead mb-0">
+                Established under UGC & AICTE guidelines to ensure a fair, transparent, and student-centric academic environment.
+            </p>
+        </div>
+    </div>
+
+    <!-- Objectives & Principles -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="custom-card p-4 h-100">
+                <div class="p-3 bg-soft-primary text-primary rounded-3 d-inline-block mb-3">
+                    <i class="bi bi-shield-check fs-4"></i>
+                </div>
+                <h5 class="fw-bold">Confidentiality & Safety</h5>
+                <p class="text-muted small mb-0">
+                    Complaints can be lodged anonymously. The identity of the complainant is safeguarded strictly against any form of academic victimization.
+                </p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="custom-card p-4 h-100">
+                <div class="p-3 bg-soft-success text-success rounded-3 d-inline-block mb-3">
+                    <i class="bi bi-stopwatch fs-4"></i>
+                </div>
+                <h5 class="fw-bold">Strict SLA Timelines</h5>
+                <p class="text-muted small mb-0">
+                    Every complaint is acknowledged within 24 hours and assigned directly to the responsible section with a mandatory closure timeline of 3 to 7 working days.
+                </p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="custom-card p-4 h-100">
+                <div class="p-3 bg-soft-warning text-warning rounded-3 d-inline-block mb-3">
+                    <i class="bi bi-diagram-3 fs-4"></i>
+                </div>
+                <h5 class="fw-bold">Multi-tier Escalation</h5>
+                <p class="text-muted small mb-0">
+                    Unresolved complaints automatically escalate from Department In-charge to Head of Department, and eventually to the Principal / Ombudsman.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Service Level Agreement (SLA) Matrix -->
+    <div class="custom-card mb-4">
+        <div class="card-header-clean bg-light">
+            <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-table me-2 text-primary"></i>Service Level Agreement (SLA) Matrix</h5>
+        </div>
+        <div class="table-responsive p-3">
+            <table class="table table-bordered table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Category</th>
+                        <th>Designated Section Officer</th>
+                        <th>Acknowledgement SLA</th>
+                        <th>Target Resolution SLA</th>
+                        <th>Escalation Level</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="fw-bold">Hostel & Housing</td>
+                        <td>Chief Warden & Estate Officer</td>
+                        <td>12 Hours</td>
+                        <td>24 to 48 Hours</td>
+                        <td>Dean (Student Welfare)</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Mess & Cafeteria</td>
+                        <td>Mess Advisory Committee</td>
+                        <td>12 Hours</td>
+                        <td>24 Hours</td>
+                        <td>Campus Administrator</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Classroom & Labs</td>
+                        <td>Department Lab In-Charge</td>
+                        <td>24 Hours</td>
+                        <td>48 to 72 Hours</td>
+                        <td>Head of Department (HoD)</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Faculty & Academics</td>
+                        <td>Dean (Academics)</td>
+                        <td>24 Hours</td>
+                        <td>5 Working Days</td>
+                        <td>Principal / Vice Chancellor</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">IT & Wi-Fi Network</td>
+                        <td>System Administrator / IT Cell</td>
+                        <td>6 Hours</td>
+                        <td>24 Hours</td>
+                        <td>Dean (Infrastructure)</td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold">Transport & Bus Service</td>
+                        <td>Transport Officer</td>
+                        <td>24 Hours</td>
+                        <td>48 Hours</td>
+                        <td>Administrative Officer</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Redressal Committee Structure -->
+    <div class="custom-card p-4">
+        <h5 class="fw-bold mb-3"><i class="bi bi-people-fill text-primary me-2"></i>Grievance Redressal Committee Composition</h5>
+        <div class="row g-3">
+            <div class="col-md-6 col-lg-3">
+                <div class="border p-3 rounded-3 text-center bg-light">
+                    <div class="fw-bold text-dark">Dr. Rajesh Sharma</div>
+                    <small class="text-primary d-block fw-semibold">Dean & Committee Chairperson</small>
+                    <small class="text-muted">Grievance Redressal Cell</small>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="border p-3 rounded-3 text-center bg-light">
+                    <div class="fw-bold text-dark">Prof. S. K. Mukherjee</div>
+                    <small class="text-primary d-block fw-semibold">Dean (Student Welfare)</small>
+                    <small class="text-muted">Student Affairs</small>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="border p-3 rounded-3 text-center bg-light">
+                    <div class="fw-bold text-dark">Dr. Vandana Rao</div>
+                    <small class="text-primary d-block fw-semibold">Chief Proctor</small>
+                    <small class="text-muted">Discipline & Anti-Ragging</small>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="border p-3 rounded-3 text-center bg-light">
+                    <div class="fw-bold text-dark">Mr. Anil Kumar</div>
+                    <small class="text-primary d-block fw-semibold">System Administrator</small>
+                    <small class="text-muted">IT Infrastructure Cell</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

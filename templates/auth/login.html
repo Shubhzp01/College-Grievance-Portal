@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign In - Grievance Portal{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="brand-icon-box mx-auto mb-3" style="width: 50px; height: 50px; font-size: 1.4rem;">
+                    <i class="bi bi-shield-lock-fill"></i>
+                </div>
+                <h4 class="fw-bold mb-1">Welcome Back</h4>
+                <p class="text-light text-opacity-75 small mb-0">Sign in to your Student or Administrator Account</p>
+            </div>
+            
+            <div class="auth-body">
+                <form action="{{ url_for('login') }}{% if request.args.get('next') %}?next={{ request.args.get('next') }}{% endif %}" method="POST" class="needs-validation" novalidate>
+                    <div class="mb-3">
+                        <label class="form-label" for="email">Email Address</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted"><i class="bi bi-envelope"></i></span>
+                            <input type="email" class="form-control" id="email" name="email" value="{{ email if email else '' }}" placeholder="e.g. admin@college.com or student@college.com" required autofocus>
+                            <div class="invalid-feedback">Please enter a valid email address.</div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <label class="form-label mb-0" for="password">Password</label>
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted"><i class="bi bi-key"></i></span>
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
+                            <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility()">
+                                <i class="bi bi-eye" id="toggleIcon"></i>
+                            </button>
+                            <div class="invalid-feedback">Please enter your password.</div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4 form-check">
+                        <input type="checkbox" class="form-check-input" id="remember" name="remember">
+                        <label class="form-check-label small text-muted" for="remember">Remember my session</label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 py-2 fw-bold rounded-pill">
+                        <i class="bi bi-box-arrow-in-right me-1"></i> Sign In to Portal
+                    </button>
+                </form>
+
+                <div class="mt-4 pt-3 border-top text-center">
+                    <p class="small text-muted mb-0">
+                        New student? <a href="{{ url_for('register') }}" class="text-primary fw-bold text-decoration-none">Create a Student Account</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function fillCredentials(email, pass) {
+    document.getElementById('email').value = email;
+    document.getElementById('password').value = pass;
+}
+
+function togglePasswordVisibility() {
+    const pwd = document.getElementById('password');
+    const icon = document.getElementById('toggleIcon');
+    if (pwd.type === 'password') {
+        pwd.type = 'text';
+        icon.classList.remove('bi-eye');
+        icon.classList.add('bi-eye-slash');
+    } else {
+        pwd.type = 'password';
+        icon.classList.remove('bi-eye-slash');
+        icon.classList.add('bi-eye');
+    }
+}
+</script>
+{% endblock %}

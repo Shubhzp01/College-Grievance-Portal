@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+
+{% block title %}Student Dashboard - Grievance Portal{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Student Header Banner -->
+    <div class="custom-card p-4 mb-4" style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); color: #ffffff;">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <span class="badge bg-primary bg-opacity-50 text-white px-3 py-1 rounded-pill mb-2">
+                    Student Portal
+                </span>
+                <h3 class="fw-bold mb-1">Welcome back, {{ current_user.name }}!</h3>
+                <p class="text-light text-opacity-75 small mb-0">
+                    <i class="bi bi-card-heading me-1"></i> Roll No: <strong>{{ current_user.roll_no }}</strong> | 
+                    <i class="bi bi-building me-1"></i> {{ current_user.department }}
+                </p>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="{{ url_for('submit_complaint') }}" class="btn btn-primary px-4 rounded-pill shadow-sm">
+                    <i class="bi bi-plus-circle me-1"></i> Lodge Grievance
+                </a>
+                <a href="{{ url_for('student_complaints') }}" class="btn btn-outline-light px-3 rounded-pill">
+                    <i class="bi bi-card-list me-1"></i> View All
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student Stats Overview Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="stat-counter-card">
+                <div class="stat-counter-icon bg-soft-primary mx-auto">
+                    <i class="bi bi-folder2-open"></i>
+                </div>
+                <div class="stat-number">{{ stats.total }}</div>
+                <div class="text-muted small fw-semibold">Total Lodged</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-counter-card">
+                <div class="stat-counter-icon bg-soft-warning mx-auto">
+                    <i class="bi bi-hourglass-top"></i>
+                </div>
+                <div class="stat-number text-warning">{{ stats.pending }}</div>
+                <div class="text-muted small fw-semibold">Pending Review</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-counter-card">
+                <div class="stat-counter-icon bg-soft-info mx-auto">
+                    <i class="bi bi-arrow-repeat"></i>
+                </div>
+                <div class="stat-number text-primary">{{ stats.in_progress }}</div>
+                <div class="text-muted small fw-semibold">In Progress</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-counter-card">
+                <div class="stat-counter-icon bg-soft-success mx-auto">
+                    <i class="bi bi-check2-circle"></i>
+                </div>
+                <div class="stat-number text-success">{{ stats.resolved }}</div>
+                <div class="text-muted small fw-semibold">Resolved</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Complaints & Quick Actions -->
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="custom-card h-100">
+                <div class="card-header-clean bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0 text-dark">
+                        <i class="bi bi-clock-history text-primary me-2"></i>My Recent Grievances
+                    </h5>
+                    <a href="{{ url_for('student_complaints') }}" class="btn btn-sm btn-link text-primary text-decoration-none p-0 fw-semibold">
+                        View All <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="p-0">
+                    {% if recent_complaints %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Title & Category</th>
+                                    <th>Priority</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for c in recent_complaints %}
+                                <tr>
+                                    <td>
+                                        <span class="font-monospace fw-bold text-dark">{{ c.complaint_code }}</span>
+                                    </td>
+                                    <td>
+                                        <div class="fw-semibold text-dark text-truncate" style="max-width: 250px;">{{ c.title }}</div>
+                                        <small class="text-muted">{{ c.category }} &bull; {{ c.created_at|format_datetime }}</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge {{ c.priority|priority_badge }}">{{ c.priority }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge {{ c.status|status_badge }}">{{ c.status }}</span>
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('student_complaint_detail', id=c.id) }}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                                            View
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="p-5 text-center">
+                        <div class="display-6 text-muted mb-2"><i class="bi bi-inbox"></i></div>
+                        <h6 class="fw-bold">No grievances lodged yet</h6>
+                        <p class="text-muted small">You haven't submitted any complaints. You can submit one anytime!</p>
+                        <a href="{{ url_for('submit_complaint') }}" class="btn btn-primary btn-sm rounded-pill px-4">
+                            <i class="bi bi-plus-circle me-1"></i> Lodge Your First Complaint
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Quick Helper Card -->
+            <div class="custom-card p-4 mb-4">
+                <h6 class="fw-bold text-dark mb-3"><i class="bi bi-lightning-charge-fill text-warning me-1"></i>Quick Actions</h6>
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('submit_complaint') }}" class="btn btn-outline-primary text-start p-2 rounded-3">
+                        <div class="fw-bold"><i class="bi bi-plus-circle-fill me-2"></i>Lodge New Complaint</div>
+                        <small class="text-muted ms-4">Submit hostel, mess, academic issues</small>
+                    </a>
+                    <a href="{{ url_for('track_complaint') }}" class="btn btn-outline-secondary text-start p-2 rounded-3">
+                        <div class="fw-bold"><i class="bi bi-search me-2"></i>Track by Complaint Code</div>
+                        <small class="text-muted ms-4">Inspect live resolution stepper</small>
+                    </a>
+                    <a href="{{ url_for('contact') }}" class="btn btn-outline-info text-start p-2 rounded-3">
+                        <div class="fw-bold"><i class="bi bi-headset me-2"></i>Emergency Helpdesk</div>
+                        <small class="text-muted ms-4">Contact wardens and cell officers</small>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Redressal Guidelines Card -->
+            <div class="custom-card p-4 bg-light border-0">
+                <h6 class="fw-bold text-dark mb-2"><i class="bi bi-info-circle-fill text-primary me-1"></i>Submission Guidelines</h6>
+                <ul class="text-muted small ps-3 mb-0">
+                    <li class="mb-2">Clearly specify location (e.g. Hostel Block B, Lab 4).</li>
+                    <li class="mb-2">Attach photos/documents for fast hardware/mess verification.</li>
+                    <li>Mark Urgent only for critical hygiene or security hazards.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

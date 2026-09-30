@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block title %}Submit New Complaint - Grievance Portal{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('student_dashboard') }}" class="text-decoration-none">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Lodge New Grievance</li>
+        </ol>
+    </nav>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="custom-card shadow-sm overflow-hidden">
+                <div class="card-header-clean bg-light d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="fw-bold mb-1 text-dark">
+                            <i class="bi bi-file-earmark-plus-fill text-primary me-2"></i>Lodge a Grievance
+                        </h4>
+                        <p class="text-muted small mb-0">Fill out details below. A unique Complaint ID will be generated upon submission.</p>
+                    </div>
+                </div>
+
+                <div class="p-4">
+                    <form action="{{ url_for('submit_complaint') }}" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        <!-- Title -->
+                        <div class="mb-3">
+                            <label class="form-label" for="title">Complaint Subject / Title <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="title" name="title" value="{{ form.title if form and form.title else '' }}" placeholder="e.g. Broken water cooler tap in Hostel Block B" required minlength="5" maxlength="150">
+                            <div class="form-text">Brief, clear summary of the issue (min 5 characters).</div>
+                            <div class="invalid-feedback">Please enter a concise title of at least 5 characters.</div>
+                        </div>
+
+                        <!-- Category & Priority Row -->
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label" for="category">Category / Domain <span class="text-danger">*</span></label>
+                                <select class="form-select" id="category" name="category" required>
+                                    <option value="">Select Domain...</option>
+                                    {% for dept in departments %}
+                                        <option value="{{ dept.name }}" {% if form and form.category == dept.name %}selected{% endif %}>{{ dept.name }}</option>
+                                    {% endfor %}
+                                    <option value="Other Campus Issue">Other Campus Issue</option>
+                                </select>
+                                <div class="invalid-feedback">Please select a category.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="priority">Priority Level <span class="text-danger">*</span></label>
+                                <select class="form-select" id="priority" name="priority" required>
+                                    <option value="Low" {% if form and form.priority == 'Low' %}selected{% endif %}>Low (General Inquiry / Non-urgent)</option>
+                                    <option value="Medium" {% if not form or form.priority == 'Medium' or not form.priority %}selected{% endif %}>Medium (Standard Campus Repair)</option>
+                                    <option value="High" {% if form and form.priority == 'High' %}selected{% endif %}>High (Affecting Daily Schedule/Classes)</option>
+                                    <option value="Urgent" {% if form and form.priority == 'Urgent' %}selected{% endif %}>Urgent (Critical Safety / Sanitation Hazard)</option>
+                                </select>
+                                <div class="invalid-feedback">Please choose a priority level.</div>
+                            </div>
+                        </div>
+
+                        <!-- Detailed Description -->
+                        <div class="mb-3">
+                            <label class="form-label" for="description">Detailed Description <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="description" name="description" rows="5" placeholder="Explain the specific issue, room/lab number, time of occurrence, and any relevant circumstances..." required minlength="15">{{ form.description if form and form.description else '' }}</textarea>
+                            <div class="form-text">Provide exact location and sufficient context (minimum 15 characters).</div>
+                            <div class="invalid-feedback">Please provide detailed description of at least 15 characters.</div>
+                        </div>
+
+                        <!-- Optional Attachment -->
+                        <div class="mb-3">
+                            <label class="form-label" for="attachment">Supporting Document / Photo (Optional)</label>
+                            <input class="form-control" type="file" id="attachment" name="attachment" accept=".jpg,.jpeg,.png,.pdf">
+                            <div class="form-text">Allowed formats: JPG, PNG, PDF. Maximum file size: 5MB.</div>
+                        </div>
+
+                        <!-- Anonymous Option Toggle -->
+                        <div class="p-3 bg-light rounded-3 border mb-4">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="is_anonymous" name="is_anonymous" value="1" {% if form and form.is_anonymous == '1' %}checked{% endif %}>
+                                <label class="form-check-label fw-bold text-dark" for="is_anonymous">
+                                    <i class="bi bi-incognito me-1"></i> Submit Anonymously
+                                </label>
+                            </div>
+                            <small class="text-muted d-block mt-1">
+                                If enabled, your name and roll number will be masked in public reports and shown as "Anonymous Student".
+                            </small>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="{{ url_for('student_dashboard') }}" class="btn btn-outline-secondary rounded-pill px-4">
+                                Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary rounded-pill px-5 fw-bold">
+                                <i class="bi bi-send-check me-1"></i> Submit Complaint
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
