@@ -4,12 +4,36 @@ from flask import g
 from werkzeug.security import generate_password_hash
 from config import Config
 
+def ensure_db_initialized():
+    """
+    Checks if the SQLite database and its tables exist.
+    If not, initializes schema and default seeds.
+    Crucial for serverless environments (like Vercel /tmp).
+    """
+    if not os.path.exists(Config.DATABASE_PATH):
+        init_db()
+        seed_db()
+    else:
+        try:
+            conn = sqlite3.connect(Config.DATABASE_PATH)
+            cur = conn.cursor()
+            cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='users'")
+            exists = cur.fetchone() is not None
+            conn.close()
+            if not exists:
+                init_db()
+                seed_db()
+        except Exception:
+            init_db()
+            seed_db()
+
 def get_db():
     """
     Opens a unique database connection per request, storing it in Flask's application context 'g'.
     Configures row_factory to sqlite3.Row for dictionary-like column access.
     """
     if 'db' not in g:
+        ensure_db_initialized()
         g.db = sqlite3.connect(Config.DATABASE_PATH)
         g.db.row_factory = sqlite3.Row
         # Enable foreign key enforcement

@@ -13,7 +13,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from config import Config
 from database import (
-    get_db, close_db, init_db, seed_db,
+    get_db, close_db, init_db, seed_db, ensure_db_initialized,
     query_db, execute_db, generate_complaint_code
 )
 
@@ -24,8 +24,26 @@ app.config.from_object(Config)
 # Register teardown function to close SQLite connection per request
 app.teardown_appcontext(close_db)
 
-# Ensure upload directory exists
-os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+# Ensure upload directory exists safely
+try:
+    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+except Exception:
+    pass
+
+# Initialize database on application startup (essential for serverless environments)
+try:
+    with app.app_context():
+        ensure_db_initialized()
+except Exception:
+    pass
+
+@app.before_request
+def ensure_serverless_db_ready():
+    """Self-healing database check for serverless lambda cold starts."""
+    try:
+        ensure_db_initialized()
+    except Exception:
+        pass
 
 
 # ==========================================================
