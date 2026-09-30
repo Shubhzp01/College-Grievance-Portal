@@ -210,7 +210,7 @@ def track_complaint():
         complaint = query_db("""
             SELECT c.*, u.name as student_name, u.roll_no as student_roll, u.department as student_dept
             FROM complaints c
-            JOIN users u ON c.user_id = u.id
+            LEFT JOIN users u ON c.user_id = u.id
             WHERE c.complaint_code = ?
         """, (code,), one=True)
 
@@ -672,7 +672,7 @@ def admin_dashboard():
     urgent_complaints = query_db("""
         SELECT c.*, u.name as student_name
         FROM complaints c
-        JOIN users u ON c.user_id = u.id
+        LEFT JOIN users u ON c.user_id = u.id
         WHERE c.priority IN ('Urgent', 'High') AND c.status NOT IN ('Resolved', 'Rejected')
         ORDER BY CASE c.priority WHEN 'Urgent' THEN 1 WHEN 'High' THEN 2 ELSE 3 END, c.created_at ASC
         LIMIT 5
@@ -682,7 +682,7 @@ def admin_dashboard():
     recent_complaints = query_db("""
         SELECT c.*, u.name as student_name, u.roll_no as student_roll
         FROM complaints c
-        JOIN users u ON c.user_id = u.id
+        LEFT JOIN users u ON c.user_id = u.id
         ORDER BY c.created_at DESC LIMIT 6
     """)
 
@@ -765,7 +765,7 @@ def admin_complaints():
         SELECT c.*, u.name as student_name, u.roll_no as student_roll, u.department as student_dept,
                f.rating as feedback_rating
         FROM complaints c
-        JOIN users u ON c.user_id = u.id
+        LEFT JOIN users u ON c.user_id = u.id
         LEFT JOIN feedback f ON c.id = f.complaint_id
         WHERE 1=1
     """
@@ -827,7 +827,7 @@ def admin_complaint_detail(id):
         SELECT c.*, u.name as student_name, u.email as student_email,
                u.roll_no as student_roll, u.department as student_dept, u.is_active as student_active
         FROM complaints c
-        JOIN users u ON c.user_id = u.id
+        LEFT JOIN users u ON c.user_id = u.id
         WHERE c.id = ?
     """, (id,), one=True)
 
@@ -944,7 +944,7 @@ def admin_export_csv():
                c.assigned_to, c.created_at, c.updated_at,
                f.rating as feedback_rating, f.comment as feedback_comment
         FROM complaints c
-        JOIN users u ON c.user_id = u.id
+        LEFT JOIN users u ON c.user_id = u.id
         LEFT JOIN feedback f ON c.id = f.complaint_id
         WHERE 1=1
     """
